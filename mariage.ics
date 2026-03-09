@@ -1,0 +1,22 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Achraf & Rayan//Wedding//FR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:mariage-achraf-rayan-20260509
+DTSTART:20260509T080000Z
+DTEND:20260510T020000Z
+SUMMARY:Mariage de Achraf & Rayan
+DESCRIPTION:Petit déjeuner de bienvenue à The Villa Event, Dilbeek, suivi du mariage civil à La Commune, et célébration à The Villa Event, Dilbeek. \n- 10h00: Petit déjeuner — The Villa Event \n- 11h30: Mariage civil — La Commune \n- 17h30: Célébration — The Villa Event
+LOCATION:Sint-Egidiusweg 2, 1702 Dilbeek
+TRANSP:OPAQUE
+SEQUENCE:0
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Mariage d'Achraf & Rayan
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+END:VCALENDAR

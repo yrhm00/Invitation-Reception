@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Invitations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="styles.css?v=5" />
+
+    <style>
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
+        }
+
+        /* Login Lock */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: var(--bg);
+            z-index: 100;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        #login-screen input {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--ink);
+            font-size: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        #login-screen button {
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            background: rgba(250, 246, 240, 0.9);
+            color: #3D2C23;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Dashboard */
+        #dashboard {
+            display: none;
+        }
+
+        .stats-card {
+            background: rgba(30, 20, 15, 0.25);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .stats-card h2 {
+            font-size: 16px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--taupe);
+            margin-bottom: 10px;
+        }
+
+        .stats-card .big-number {
+            font-family: var(--font-display);
+            font-size: 64px;
+            line-height: 1;
+            color: var(--ink);
+        }
+
+        .guest-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .guest-item {
+            background: rgba(250, 246, 240, 0.05);
+            border: 1px solid rgba(250, 246, 240, 0.1);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .guest-item.absent {
+            opacity: 0.6;
+        }
+
+        .guest-name {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .guest-status {
+            font-size: 14px;
+            color: var(--taupe);
+        }
+
+        .guest-count {
+            background: rgba(250, 246, 240, 0.9);
+            color: #3D2C23;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+    </style>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+
+<body>
+
+    <!-- Mot de passe simple -->
+    <div id="login-screen">
+        <h2 style="margin-bottom: 24px; font-family: var(--font-display); font-size: 32px;">Espace Sécurisé</h2>
+        <input type="password" id="admin-pass" placeholder="Mot de passe" />
+        <button onclick="checkPass()">Entrer</button>
+    </div>
+
+    <div id="dashboard" class="admin-container">
+        <h1 style="margin-bottom: 30px; text-align: center;">Réponses des Invités</h1>
+
+        <div class="stats-card">
+            <h2>Total des Personnes Confirmées</h2>
+            <div class="big-number" id="total-guests">0</div>
+            <p style="margin-top: 12px; color: var(--taupe); font-size: 14px;" id="total-responses">0 réponses reçues
+            </p>
+        </div>
+
+        <ul class="guest-list" id="guest-list">
+            <li style="text-align:center; padding: 20px;">Chargement des données...</li>
+        </ul>
+    </div>
+
+    <script>
+        // Check if user is already logged in (expires after 7 days)
+        const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000;
+
+        window.onload = function () {
+            const savedSession = localStorage.getItem('adminAuthData');
+            if (savedSession) {
+                const { timestamp } = JSON.parse(savedSession);
+                if (Date.now() - timestamp < SESSION_DURATION) {
+                    // Session valid, skip login
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    loadData();
+                } else {
+                    // Session expired
+                    localStorage.removeItem('adminAuthData');
+                }
+            }
+        };
+
+        function checkPass() {
+            // Un mot de passe très simple pour empêcher les curieux
+            if (document.getElementById('admin-pass').value === "rayan") {
+                // Save session for 7 days
+                localStorage.setItem('adminAuthData', JSON.stringify({ timestamp: Date.now() }));
+
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadData();
+            } else {
+                alert("Mot de passe incorrect");
+            }
+        }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC6CVx8bEiB3ObuNKybFHPHkSDU9YBcHkI",
+            authDomain: "mariage-rayan.firebaseapp.com",
+            projectId: "mariage-rayan",
+            storageBucket: "mariage-rayan.firebasestorage.app",
+            messagingSenderId: "901117407492",
+            appId: "1:901117407492:web:4af8079ecf4d9c1770e051"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function loadData() {
+            db.collection("guests").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                let totalGuests = 0;
+                let htmlStr = "";
+                let count = 0;
+
+                snapshot.forEach((doc) => {
+                    count++;
+                    const data = doc.data();
+                    const present = data.present;
+                    const guests = parseInt(data.guests) || 0;
+                    const name = data.name || "Inconnu";
+
+                    if (present) {
+                        totalGuests += guests;
+                        htmlStr += `
+              <li class="guest-item">
+                <div>
+                  <div class="guest-name">${name}</div>
+                  <div class="guest-status">Sera présent(e)</div>
+                </div>
+                <div class="guest-count">${guests} pers.</div>
+              </li>
+            `;
+                    } else {
+                        htmlStr += `
+              <li class="guest-item absent">
+                <div>
+                  <div class="guest-name">${name}</div>
+                  <div class="guest-status" style="color: #FF8A8A;">Ne sera pas présent(e)</div>
+                </div>
+                <div class="guest-count" style="background: transparent; border: 1px solid rgba(250, 246, 240, 0.4); color: var(--ink);">0 pers.</div>
+              </li>
+            `;
+                    }
+                });
+
+                if (count === 0) {
+                    htmlStr = "<li style='text-align:center;'>Personne n'a encore répondu.</li>";
+                }
+
+                document.getElementById("total-guests").textContent = totalGuests;
+                document.getElementById("total-responses").textContent = `${count} réponses reçues`;
+                document.getElementById("guest-list").innerHTML = htmlStr;
+            });
+        }
+    </script>
+</body>
+
+</html>

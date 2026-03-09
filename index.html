@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SAVE THE DATE — Achraf &amp; Rayan</title>
+  <meta name="description" content="SAVE THE DATE pour le mariage de Achraf & Rayan, le samedi 9 mai 2026." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=4" />
+
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <!-- Firebase Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+
+<body class="opening-active">
+
+  <div class="petal-field" aria-hidden="true"></div>
+
+  <!-- OPENING SPLASH -->
+  <button id="opening" class="opening" aria-label="Ouvrir l'invitation">
+    <img src="Gemini_Generated_Image_hd93l1hd93l1hd93.png" alt="A & R" class="opening-splash-img" />
+  </button>
+
+  <!-- MAIN CONTENT -->
+  <main id="content" class="content single-image-container" aria-hidden="true">
+    <div class="image-and-overlays-wrapper">
+      <img src="QUE RECEPTION.png" alt="Invitation Achraf & Rayan" class="wedding-image" />
+
+      <!-- OVERLAYS (percentages based on image height 3780 and width 397) -->
+      <!-- 1. Ajouter au calendrier -->
+      <!-- Y: ~397/3780 = 10.5% -->
+      <a href="mariage.ics" download="Mariage_Achraf_Rayan.ics" class="overlay-link overlay-cal"
+        aria-label="Ajouter au calendrier"></a>
+
+      <!-- 2. Itinéraire (Réception) -->
+      <a href="https://maps.google.com/?q=The+villa+Event+-+Sint-Egidiusweg+2,+1702+Dilbeek" target="_blank"
+        rel="noopener" class="overlay-link overlay-itin-reception" aria-label="Itinéraire Réception"></a>
+
+      <!-- 6. Input Nom & Prénom (overlaid on image) -->
+      <input type="text" id="overlay-name-input" class="overlay-name-input" placeholder="Yassin Khadafi" />
+
+      <!-- 7. Radio buttons présence (overlaid on image) -->
+      <label class="overlay-radio overlay-radio-yes">
+        <input type="radio" name="overlay-presence" value="yes" />
+      </label>
+      <label class="overlay-radio overlay-radio-no">
+        <input type="radio" name="overlay-presence" value="no" />
+      </label>
+
+      <!-- 8. Countdown overlay -->
+      <div id="overlay-countdown" class="overlay-countdown">
+        <div class="cd-unit"><span id="cd-days" class="cd-num">--</span><span class="cd-lbl">jours</span></div>
+        <div class="cd-unit"><span id="cd-hours" class="cd-num">--</span><span class="cd-lbl">heures</span></div>
+        <div class="cd-unit"><span id="cd-mins" class="cd-num">--</span><span class="cd-lbl">min</span></div>
+        <div class="cd-unit"><span id="cd-secs" class="cd-num">--</span><span class="cd-lbl">sec</span></div>
+      </div>
+
+      <!-- 5. Confirmer -->
+      <!-- Y: ~70.5% -->
+      <button type="button" class="overlay-link overlay-btn-confirmer" aria-label="Confirmer RSVP"
+        id="open-rsvp-btn"></button>
+    </div>
+
+    <!-- MODAL RSVP (Hidden by default) -->
+    <div id="rsvp-modal-overlay" class="rsvp-modal-overlay">
+      <div class="rsvp-modal-content">
+        <button type="button" class="rsvp-modal-close" id="close-rsvp-btn" aria-label="Fermer">✕</button>
+        <div class="section-rsvp">
+          <h2 class="lieu-title">Confirmer ma présence</h2>
+          <p class="lieu-swirl">〜</p>
+          <!-- The Form -->
+          <form class="rsvp-form" id="rsvp-form">
+            <label>
+              Votre prénom &amp; nom
+              <input type="text" placeholder="ex. Yassin Legoat" required />
+            </label>
+            <div class="choice-group">
+              <span>Serez-vous présent(e) ?</span>
+              <label class="choice">
+                <input type="radio" name="presence" value="yes" required />
+                <span>Oui, avec grand plaisir !</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="presence" value="no" />
+                <span>Non je ne peux pas, j'ai piscine</span>
+              </label>
+            </div>
+            <div class="rsvp-yes" style="display:none">
+              <label>
+                Nombre de personnes
+                <input type="number" name="guests" min="1" placeholder="Ex: 2" required
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary" id="rsvp-submit">Confirmer</button>
+            <p
+              style="text-align: center; font-size: 13px; color: var(--taupe); margin-top: 16px; font-style: italic; letter-spacing: 0.5px;">
+              Merci de confirmer votre présence avant le 31 mars 2026
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUEST COUNT MODAL -->
+    <div id="guest-count-overlay" class="rsvp-modal-overlay">
+      <div class="rsvp-modal-content guest-count-modal">
+        <button type="button" class="rsvp-modal-close" id="close-guest-btn" aria-label="Fermer">✕</button>
+        <div class="section-rsvp">
+          <h2 class="lieu-title" style="font-size: clamp(28px, 8vw, 42px);">Combien serez-vous ?</h2>
+          <p class="lieu-swirl">〜</p>
+          <p style="font-family: var(--font-script); font-style: italic; font-size: 18px; color: var(--taupe); line-height: 1.6; text-align: center;">
+            Merci d'indiquer le nombre total de personnes<br>(vous inclus)
+          </p>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 20px;">
+            <button type="button" class="guest-count-btn" id="guest-minus" aria-label="Moins">−</button>
+            <span id="guest-count-display" class="guest-count-display">1</span>
+            <button type="button" class="guest-count-btn" id="guest-plus" aria-label="Plus">+</button>
+          </div>
+          <button type="button" class="btn btn-primary" id="guest-confirm-btn" style="margin-top: 28px;">Confirmer</button>
+          <p style="text-align: center; font-size: 13px; color: var(--taupe); margin-top: 16px; font-style: italic; letter-spacing: 0.5px;">
+            Merci de confirmer votre présence avant le 31 mars 2026
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FIXED FULLSCREEN SUCCESS SLIDE -->
+  <div id="rsvp-success-slide"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; padding: 20px; box-sizing: border-box;">
+    <!-- Lucide: Party Popper -->
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-linecap="round"
+      stroke-linejoin="round" style="width: 56px; height: 56px; margin-bottom: 24px;">
+      <path d="M5.8 11.3 2 22l10.7-3.79"></path>
+      <path d="M4 3h.01"></path>
+      <path d="M22 8h.01"></path>
+      <path d="M15 2h.01"></path>
+      <path d="M22 20h.01"></path>
+      <path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-1.22l-1.29-1.29"></path>
+      <path d="m11 13 4 4"></path>
+      <path d="m8.5 10.5 5 5"></path>
+      <path d="m13 15.5 5 5"></path>
+    </svg>
+    <h3 id="rsvp-slide-title"
+      style="font-family: var(--font-display); font-size: 36px; color: var(--ink); margin-bottom: 16px; line-height: 1.2;">
+      Merci !</h3>
+    <p id="rsvp-slide-text"
+      style="font-family: var(--font-body); font-size: 18px; color: var(--taupe); line-height: 1.6; max-width: 400px; margin-bottom: 40px; margin-left: auto; margin-right: auto;">
+      Votre présence est confirmée.
+    </p>
+    <a id="rsvp-slide-cal" href="mariage.ics" download="Mariage_Achraf_Rayan.ics" class="btn btn-primary"
+      style="margin-bottom: 20px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" style="width: 18px; height: 18px;">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      Ajouter au calendrier
+    </a>
+    <button id="rsvp-slide-close"
+      style="background: none; border: none; color: var(--taupe); font-family: var(--font-body); font-size: 14px; text-decoration: underline; cursor: pointer; padding: 10px;">Fermer
+      la page</button>
+  </div>
+
+  <script src="script.js?v=2"></script>
+</body>
+
+</html>
