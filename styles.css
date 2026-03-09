@@ -1166,11 +1166,8 @@ body {
 /* ─── GUEST COUNT MODAL ──────────────────────────────────────────── */
 .guest-count-modal {
   max-width: 400px;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   width: calc(100% - 40px);
+  margin: 0 auto;
 }
 
 .guest-count-btn {
