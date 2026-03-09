@@ -1170,6 +1170,11 @@ body {
   margin: 0 auto;
 }
 
+#guest-count-overlay {
+  align-items: flex-end;
+  padding-bottom: 40px;
+}
+
 .guest-count-btn {
   width: 52px;
   height: 52px;
