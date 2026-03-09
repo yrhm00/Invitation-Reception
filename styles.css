@@ -1171,8 +1171,7 @@ body {
 }
 
 #guest-count-overlay {
-  align-items: flex-end;
-  padding-bottom: 20px;
+  align-items: center;
 }
 
 .guest-count-btn {
