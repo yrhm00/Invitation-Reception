@@ -200,13 +200,13 @@ radios.forEach(r => {
 
 /* ── Firebase Initialization ── */
 const firebaseConfig = {
-  apiKey: "AIzaSyC6CVx8bEiB3ObuNKybFHPHkSDU9YBcHkI",
-  authDomain: "mariage-rayan.firebaseapp.com",
-  projectId: "mariage-rayan",
-  storageBucket: "mariage-rayan.firebasestorage.app",
-  messagingSenderId: "901117407492",
-  appId: "1:901117407492:web:4af8079ecf4d9c1770e051",
-  measurementId: "G-1RYMRCBZ3S"
+  apiKey: "AIzaSyB-ZijDwgIs7waN_HnoNhYk2HftHdrs3Jw",
+  authDomain: "rayan-reception.firebaseapp.com",
+  projectId: "rayan-reception",
+  storageBucket: "rayan-reception.firebasestorage.app",
+  messagingSenderId: "345615655546",
+  appId: "1:345615655546:web:fdac180fad36f0b4c751c3",
+  measurementId: "G-1DBVNE60PB"
 };
 
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
