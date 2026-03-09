@@ -1002,7 +1002,7 @@ body.opening-active .content {
   border-radius: 0;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: clamp(12px, 1.8vw, 16px);
+  font-size: 16px;
   color: #632823;
   text-align: left;
   outline: none;
@@ -1016,7 +1016,7 @@ body.opening-active .content {
 .overlay-name-input::placeholder {
   color: rgba(99, 40, 35, 0.25);
   font-style: italic;
-  font-size: clamp(10px, 1.5vw, 14px);
+  font-size: clamp(12px, 1.5vw, 14px);
 }
 
 .overlay-name-input:focus {
@@ -1166,6 +1166,11 @@ body {
 /* ─── GUEST COUNT MODAL ──────────────────────────────────────────── */
 .guest-count-modal {
   max-width: 400px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 40px);
 }
 
 .guest-count-btn {
